@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>童维猛 - Java开发工程师</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #dbeafe;
+            --accent: #0ea5e9;
+            --text: #1e293b;
+            --text-secondary: #475569;
+            --text-light: #64748b;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --tag-bg: #eff6ff;
+            --tag-border: #bfdbfe;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* ===== Header ===== */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 48px 40px;
+            border-radius: 16px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 50%;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 14px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .header .meta svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        .tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tag {
+            background: rgba(255,255,255,0.18);
+            border: 1px solid rgba(255,255,255,0.25);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* ===== Sections ===== */
+        .section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 24px;
+            transition: box-shadow 0.2s;
+        }
+
+        .section:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--primary-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title svg {
+            width: 22px;
+            height: 22px;
+            fill: var(--primary);
+        }
+
+        /* ===== Skills ===== */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .skill-item {
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .skill-item h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 6px;
+        }
+
+        .skill-item p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 16px;
+        }
+
+        .tech-tag {
+            background: var(--tag-bg);
+            border: 1px solid var(--tag-border);
+            color: var(--primary-dark);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* ===== Timeline ===== */
+        .timeline-item {
+            position: relative;
+            padding-left: 28px;
+            padding-bottom: 28px;
+            border-left: 2px solid var(--border);
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+            border-left-color: transparent;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -7px;
+            top: 6px;
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .timeline-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .timeline-header .company {
+            font-size: 14px;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .timeline-header .date {
+            font-size: 13px;
+            color: var(--text-light);
+            background: var(--bg);
+            padding: 2px 10px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .timeline-header .role-badge {
+            font-size: 12px;
+            background: var(--tag-bg);
+            color: var(--primary);
+            border: 1px solid var(--tag-border);
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .timeline-body {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .timeline-body ul {
+            padding-left: 18px;
+            margin-top: 8px;
+        }
+
+        .timeline-body li {
+            margin-bottom: 4px;
+        }
+
+        /* ===== Project ===== */
+        .project-card {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .project-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .project-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .project-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.7;
+        }
+
+        .project-subtitle {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin: 14px 0 8px;
+        }
+
+        .project-subtitle:first-of-type {
+            margin-top: 0;
+        }
+
+        .arch-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .arch-list li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 3px 0;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .arch-list li::before {
+            content: '◆';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-size: 10px;
+            top: 5px;
+        }
+
+        .highlight-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .highlight-list li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 3px 0;
+            padding-left: 18px;
+            position: relative;
+        }
+
+        .highlight-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #16a34a;
+            font-weight: 700;
+        }
+
+        .contribution-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .contribution-list li {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 3px 0;
+            padding-left: 18px;
+            position: relative;
+        }
+
+        .contribution-list li::before {
+            content: '▶';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-size: 10px;
+            top: 5px;
+        }
+
+        .result-badge {
+            display: inline-block;
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-top: 12px;
+            font-weight: 500;
+        }
+
+        /* ===== Education ===== */
+        .edu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .edu-item h3 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .edu-item .edu-detail {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .cert-list {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .cert-item {
+            background: var(--tag-bg);
+            border: 1px solid var(--tag-border);
+            color: var(--primary-dark);
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* ===== Footer ===== */
+        .footer {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-light);
+            font-size: 13px;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* ===== Print ===== */
+        @media print {
+            body { background: white; }
+            .container { padding: 0; max-width: 100%; }
+            .header { border-radius: 0; padding: 32px 24px; }
+            .section { border-radius: 0; box-shadow: none; border: 1px solid #ddd; }
+            .section:hover { box-shadow: none; }
+        }
+
+        /* ===== Mobile ===== */
+        @media (max-width: 640px) {
+            .container { padding: 16px; }
+            .header { padding: 32px 24px; }
+            .header h1 { font-size: 28px; }
+            .header .meta { flex-direction: column; gap: 8px; }
+            .section { padding: 20px; }
+            .skills-grid { grid-template-columns: 1fr; }
+            .timeline-header { flex-direction: column; }
+            .project-card { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>童维猛</h1>
+            <div class="subtitle">Java开发工程师 · 8年经验 · 期望薪资：13-15K · 期望城市：武汉</div>
+            <div class="meta">
+                <span>
+                    <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                    i2twmx@gmail.com
+                </span>
+                <span>
+                    <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.25 1.01l-2.2 2.2z"/></svg>
+                    15374554181
+                </span>
+                <span>
+                    <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/></svg>
+                    男 · 32岁
+                </span>
+            </div>
+            <div class="tag-row">
+                <span class="tag">Java开发</span>
+                <span class="tag">开源框架应用</span>
+                <span class="tag">分布式系统搭建</span>
+                <span class="tag">问题解决能力</span>
+                <span class="tag">团队协作</span>
+            </div>
+        </header>
+
+        <!-- 技术能力 -->
+        <div class="section">
+            <div class="section-title">
+                <svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg>
+                技术能力
+            </div>
+            <div class="skills-grid">
+                <div class="skill-item">
+                    <h4>Java 开发</h4>
+                    <p>精通 Java SE/EE 核心 API，包括多线程编程、集合框架、网络编程等，编写高效稳定的代码。</p>
+                </div>
+                <div class="skill-item">
+                    <h4>主流框架</h4>
+                    <p>深入理解 Spring、Spring Boot、Spring Cloud、MyBatis 等框架设计原理，快速开发和架构设计。</p>
+                </div>
+                <div class="skill-item">
+                    <h4>数据库管理</h4>
+                    <p>精通 MySQL、Oracle 关系型数据库设计开发优化，熟悉 SQL 调优和复杂事务处理。</p>
+                </div>
+            </div>
+            <div class="tech-tags">
+                <span class="tech-tag">Spring Boot</span>
+                <span class="tech-tag">Elasticsearch</span>
+                <span class="tech-tag">Nacos</span>
+                <span class="tech-tag">Docker</span>
+                <span class="tech-tag">Python</span>
+                <span class="tech-tag">FastAPI</span>
+                <span class="tech-tag">Redis</span>
+                <span class="tech-tag">RabbitMQ</span>
+                <span class="tech-tag">MyBatis-Plus</span>
+                <span class="tech-tag">LangChain4j</span>
+            </div>
+        </div>
+
+        <!-- 工作经历 -->
+        <div class="section">
+            <div class="section-title">
+                <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm6 11h-3v3h-2v-3H8v-2h3v-3h2v3h3v2z"/></svg>
+                工作经历
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-header">
+                    <div>
+                        <h3>武汉小象智云科技有限公司</h3>
+                        <span class="company">Java 开发工程师</span>
+                    </div>
+                    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                        <span class="role-badge">主程</span>
+                        <span class="date">2024.10 - 至今</span>
+                    </div>
+                </div>
+                <div class="timeline-body">
+                    <ul>
+                        <li>主导开发公司产品，负责整体技术架构设计与核心模块实现</li>
+                        <li>分配每月开发任务，协调团队成员工作进度</li>
+                        <li>主导 AI 学术问答系统、智慧云 UIMS、智能文献分析等多个核心项目</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-header">
+                    <div>
+                        <h3>济南泉方科技有限公司</h3>
+                        <span class="company">Java 开发工程师</span>
+                    </div>
+                    <span class="date">2016.10 - 2019.07</span>
+                </div>
+                <div class="timeline-body">
+                    <ul>
+                        <li>负责用户系统功能优化与升级，确保系统稳定运行</li>
+                        <li>参与用户系统界面设计，提升用户体验</li>
+                        <li>主导论文查重算法研究与开发，提高查重准确率</li>
+                        <li>优化查重系统处理速度，缩短用户等待时间</li>
+                        <li>协同团队进行代码审查，编写技术文档</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 项目经历 -->
+        <div class="section">
+            <div class="section-title">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z"/></svg>
+                项目经历
+            </div>
+
+            <!-- AI学术问答系统 -->
+            <div class="project-card">
+                <div class="timeline-header">
+                    <div>
+                        <div class="project-title">AI 学术问答系统</div>
+                        <span class="role-badge">主程</span>
+                    </div>
+                    <span class="date">2024.10 - 至今</span>
+                </div>
+                <p class="project-desc">
+                    面向科研人员的智能对话系统，基于大语言模型（LLM）和 RAG 技术实现多轮对话式学术问答与个性化知识推荐。支持复杂问题拆解、跨文档推理及多语言交互，已覆盖生命科学、工程材料等专业领域，<strong>日均处理问答请求超1万次</strong>。
+                </p>
+                <div class="tech-tags">
+                    <span class="tech-tag">Spring Boot 3.4</span>
+                    <span class="tech-tag">Spring AI</span>
+                    <span class="tech-tag">LangChain4j</span>
+                    <span class="tech-tag">Elasticsearch 8.5</span>
+                    <span class="tech-tag">Milvus</span>
+                    <span class="tech-tag">DeepSeek LLM</span>
+                    <span class="tech-tag">LoRA微调</span>
+                    <span class="tech-tag">MinIO</span>
+                    <span class="tech-tag">Redis</span>
+                </div>
+                <div class="project-subtitle">▌系统架构</div>
+                <ul class="arch-list">
+                    <li><strong>交互层：</strong>Web端与API接口，集成多轮对话管理与上下文感知，实时反馈（答案溯源、文献跳转）</li>
+                    <li><strong>核心引擎层：</strong>LangChain4j对话状态机，复杂问题拆解与子问题追踪，自研会话上下文压缩算法</li>
+                    <li><strong>知识检索：</strong>Elasticsearch BM25 + 语义向量检索（Sentence-BERT），动态知识库更新</li>
+                    <li><strong>模型优化层：</strong>LoRA微调DeepSeek模型，学科专属Prompt模板动态加载</li>
+                </ul>
+                <div class="project-subtitle">▌关键技术突破</div>
+                <ul class="highlight-list">
+                    <li>设计基于栈的对话状态机，解决长对话上下文丢失问题</li>
+                    <li>开发上下文压缩算法，将对话历史精简为关键信息片段</li>
+                    <li>LoRA技术对DeepSeek领域微调，减少通用模型幻觉问题</li>
+                    <li>Elasticsearch terms aggregation + 向量相似度混合排序</li>
+                    <li>中英文混合提问自动识别，Google Translate API专业术语翻译</li>
+                </ul>
+            </div>
+
+            <!-- 智慧云UIMS -->
+            <div class="project-card">
+                <div class="timeline-header">
+                    <div>
+                        <div class="project-title">智慧云 UIMS - 企业级身份管理平台</div>
+                        <span class="role-badge">主程</span>
+                    </div>
+                    <span class="date">2019.11 - 至今</span>
+                </div>
+                <p class="project-desc">
+                    企业级统一身份管理平台，实现用户全生命周期管理、多租户管理、权限精细化控制、安全审计功能。
+                </p>
+                <div class="result-badge">已对接1600家企业 · 管理100,000+用户账号 · 支持横向扩展高并发</div>
+                <div class="tech-tags" style="margin-top:12px;">
+                    <span class="tech-tag">Spring Boot 2.3</span>
+                    <span class="tech-tag">MyBatis-Plus 3.4</span>
+                    <span class="tech-tag">Apache Shiro</span>
+                    <span class="tech-tag">JWT</span>
+                    <span class="tech-tag">Redis</span>
+                    <span class="tech-tag">Elasticsearch 7.4</span>
+                    <span class="tech-tag">WebSocket</span>
+                    <span class="tech-tag">Kafka</span>
+                </div>
+                <div class="project-subtitle">▌核心模块</div>
+                <ul class="arch-list">
+                    <li><strong>用户中心：</strong>多因子认证、全生命周期管理、组织架构映射、AD/LDAP对接</li>
+                    <li><strong>权限管控：</strong>资源级/数据级/字段级三维管控，RBAC + 位运算权限编码（性能提升40倍）</li>
+                    <li><strong>安全体系：</strong>BCrypt加密 + AES脱敏、签名校验、XSS/SQL注入/CSRF防护、IP白名单 + 分布式限流</li>
+                    <li><strong>系统运维：</strong>OSHI框架实时监控、阈值预警、AOP日志 + Kafka异步持久化</li>
+                </ul>
+                <div class="project-subtitle">▌技术难点</div>
+                <ul class="highlight-list">
+                    <li>Redis分布式锁 + 登录异步化 + JWT无状态设计，解决峰值QPS 5000+</li>
+                    <li>ThreadLocal租户上下文 + MyBatis拦截器自动隔离，实现多租户架构</li>
+                    <li>AOP + 事件监听双维度审计采集，Elasticsearch + MySQL双写</li>
+                </ul>
+            </div>
+
+            <!-- 智能文献分析 -->
+            <div class="project-card">
+                <div class="timeline-header">
+                    <div>
+                        <div class="project-title">智能文献分析系统</div>
+                        <span class="role-badge">主程</span>
+                    </div>
+                    <span class="date">2019.07 - 2025.05</span>
+                </div>
+                <p class="project-desc">
+                    面向学术研究的多模态文献处理系统，实现文献全生命周期管理、智能检索及内容分析。支持PDF/Word/TXT/图片等多格式解析，提供高精度中英文混合检索、跨模态相似度匹配。
+                </p>
+                <div class="result-badge">已有多家三甲医院和高校投入使用（瑞金医院、南京鼓楼医院、宁夏医科大学等）</div>
+                <div class="tech-tags" style="margin-top:12px;">
+                    <span class="tech-tag">Spring Boot 2.7</span>
+                    <span class="tech-tag">Spring Cloud Alibaba</span>
+                    <span class="tech-tag">Nacos</span>
+                    <span class="tech-tag">Elasticsearch 8.4</span>
+                    <span class="tech-tag">Stanford CoreNLP 4.0</span>
+                    <span class="tech-tag">YOLOv8</span>
+                    <span class="tech-tag">RabbitMQ</span>
+                    <span class="tech-tag">Sa-Token</span>
+                </div>
+                <div class="project-subtitle">▌核心功能</div>
+                <ul class="arch-list">
+                    <li><strong>多模态检索：</strong>文本倒排索引 + 图片向量数据库，BM25+TF-IDF + 余弦相似度跨模态检索</li>
+                    <li><strong>IK分词优化：</strong>定制分词策略，专业术语识别率提升35%</li>
+                    <li><strong>文档处理引擎：</strong>多格式解析器、MD5去重、NLP预处理流水线</li>
+                    <li><strong>学术分析：</strong>文献相似度矩阵、风险评估模型、可视化报告自动生成</li>
+                </ul>
+                <div class="project-subtitle">▌关键技术突破</div>
+                <ul class="highlight-list">
+                    <li>Elasticsearch索引分片策略优化，QPS提升至2000+</li>
+                    <li>文本-图像联合检索，实现跨模态检索融合</li>
+                    <li>RabbitMQ异步处理链路，任务完成时效缩短60%</li>
+                    <li>MinIO分层存储策略，降低存储成本</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 教育经历 -->
+        <div class="section">
+            <div class="section-title">
+                <svg viewBox="0 0 24 24"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/></svg>
+                教育经历
+            </div>
+            <div class="edu-item">
+                <div>
+                    <h3>黄冈职业技术学院</h3>
+                    <div class="edu-detail">计算机网络技术 · 大专</div>
+                </div>
+                <span class="date">2012 - 2016</span>
+            </div>
+            <div class="cert-list">
+                <span class="cert-item">大学英语四级</span>
+                <span class="cert-item">计算机三级</span>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2026 童维猛 · <a href="https://github.com/mwtxr" target="_blank">GitHub</a> · 简历页面由 AI 辅助生成</p>
+        </div>
+    </div>
+</body>
+</html>
