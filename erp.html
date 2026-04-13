@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP 管理后台</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --black: #171717;
+            --white: #ffffff;
+            --gray-900: #21262d;
+            --gray-600: #4d4d4d;
+            --gray-400: #808080;
+            --gray-200: #d1d5db;
+            --gray-100: #ebebeb;
+            --gray-50: #f6f8fa;
+            --gray-25: #fafbfc;
+            --accent: #0072f5;
+            --accent-light: #e8f0fe;
+            --success: #1a8754;
+            --success-light: #dcfce7;
+            --warning: #d97706;
+            --warning-light: #fef3c7;
+            --danger: #dc2626;
+            --danger-light: #fef2f2;
+            --purple: #7c3aed;
+            --purple-light: #f3e8ff;
+            --sidebar-w: 240px;
+            --header-h: 60px;
+            --shadow-border: 0 0 0 1px rgba(0,0,0,0.08);
+            --shadow-card: 0 0 0 1px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+            --shadow-elevated: 0 0 0 1px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.08);
+            --radius: 8px;
+            --transition: 0.2s ease;
+        }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--gray-50);
+            color: var(--black);
+            min-height: 100vh;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            position: fixed; left: 0; top: 0; bottom: 0;
+            width: var(--sidebar-w);
+            background: var(--black);
+            color: var(--white);
+            display: flex; flex-direction: column;
+            z-index: 100;
+            transition: transform var(--transition);
+        }
+        .sidebar-brand {
+            height: var(--header-h);
+            display: flex; align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .sidebar-brand h2 {
+            font-size: 18px; font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        .sidebar-brand span { color: var(--accent); }
+        .sidebar-nav { flex: 1; padding: 12px; overflow-y: auto; }
+        .nav-section { margin-bottom: 20px; }
+        .nav-section-title {
+            font-size: 11px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            color: rgba(255,255,255,0.35);
+            padding: 8px 12px 6px;
+        }
+        .nav-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 12px; border-radius: 6px;
+            font-size: 13px; font-weight: 500;
+            color: rgba(255,255,255,0.65);
+            cursor: pointer; transition: all var(--transition);
+            user-select: none;
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .nav-item.active { background: rgba(255,255,255,0.12); color: #fff; }
+        .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+        .nav-item .badge {
+            margin-left: auto;
+            background: var(--accent); color: #fff;
+            font-size: 10px; font-weight: 600;
+            padding: 2px 7px; border-radius: 10px;
+        }
+        .sidebar-footer {
+            padding: 16px; border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--accent); color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 600;
+        }
+        .sidebar-footer .user-info { flex: 1; }
+        .sidebar-footer .user-name { font-size: 13px; font-weight: 500; color: #fff; }
+        .sidebar-footer .user-role { font-size: 11px; color: rgba(255,255,255,0.45); }
+
+        /* ===== HEADER ===== */
+        .main-wrapper {
+            margin-left: var(--sidebar-w);
+            min-height: 100vh;
+        }
+        .header {
+            height: var(--header-h);
+            background: var(--white);
+            border-bottom: var(--shadow-border);
+            display: flex; align-items: center;
+            padding: 0 28px;
+            position: sticky; top: 0; z-index: 50;
+        }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .header-left h1 {
+            font-size: 16px; font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+        .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--gray-400); }
+        .breadcrumb a { color: var(--gray-400); text-decoration: none; }
+        .breadcrumb a:hover { color: var(--black); }
+        .header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+        .search-box {
+            display: flex; align-items: center; gap: 8px;
+            padding: 7px 14px; border-radius: 6px;
+            background: var(--gray-50);
+            box-shadow: var(--shadow-border);
+            font-size: 13px; color: var(--gray-400);
+            cursor: pointer; min-width: 200px;
+        }
+        .search-box svg { width: 15px; height: 15px; }
+        .search-box kbd {
+            margin-left: auto;
+            font-family: inherit; font-size: 11px;
+            padding: 2px 6px; border-radius: 4px;
+            background: var(--white);
+            box-shadow: var(--shadow-border);
+        }
+        .icon-btn {
+            width: 36px; height: 36px; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: background var(--transition);
+            position: relative; background: none; border: none; color: var(--gray-600);
+        }
+        .icon-btn:hover { background: var(--gray-50); }
+        .icon-btn svg { width: 18px; height: 18px; }
+        .icon-btn .dot {
+            position: absolute; top: 6px; right: 6px;
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--danger);
+            border: 2px solid var(--white);
+        }
+
+        /* ===== PAGE CONTENT ===== */
+        .page-content { padding: 24px 28px; }
+        .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+        .page-title { font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
+        .page-subtitle { font-size: 14px; color: var(--gray-400); margin-top: 4px; }
+        .page-actions { display: flex; gap: 8px; }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px; border-radius: 6px;
+            font-size: 13px; font-weight: 500; font-family: inherit;
+            cursor: pointer; transition: all var(--transition);
+            border: none; white-space: nowrap;
+        }
+        .btn svg { width: 15px; height: 15px; }
+        .btn-dark { background: var(--black); color: var(--white); }
+        .btn-dark:hover { background: #333; }
+        .btn-outline { background: var(--white); color: var(--black); box-shadow: var(--shadow-border); }
+        .btn-outline:hover { background: var(--gray-50); }
+        .btn-ghost { background: transparent; color: var(--gray-600); }
+        .btn-ghost:hover { background: var(--gray-50); }
+        .btn-sm { padding: 5px 10px; font-size: 12px; }
+        .btn-danger { background: var(--danger); color: var(--white); }
+        .btn-danger:hover { background: #b91c1c; }
+
+        /* ===== STAT CARDS ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow-card);
+        }
+        .stat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .stat-label { font-size: 13px; color: var(--gray-400); font-weight: 500; }
+        .stat-icon {
+            width: 36px; height: 36px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .stat-icon svg { width: 18px; height: 18px; }
+        .stat-value { font-size: 28px; font-weight: 600; letter-spacing: -1px; margin-bottom: 8px; }
+        .stat-change { font-size: 12px; display: flex; align-items: center; gap: 4px; }
+        .stat-change.up { color: var(--success); }
+        .stat-change.down { color: var(--danger); }
+        .stat-change span { color: var(--gray-400); }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+        }
+        .card-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        .card-title { font-size: 14px; font-weight: 600; }
+        .card-body { padding: 20px; }
+
+        /* ===== CHART PLACEHOLDER ===== */
+        .charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
+        .chart-area { width: 100%; height: 260px; position: relative; }
+        .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 100%; padding-top: 20px; }
+        .bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .bar-wrapper { width: 100%; display: flex; gap: 3px; align-items: flex-end; height: 200px; }
+        .bar {
+            flex: 1; border-radius: 3px 3px 0 0;
+            transition: all var(--transition);
+            cursor: pointer; min-width: 8px;
+        }
+        .bar:hover { opacity: 0.8; filter: brightness(1.1); }
+        .bar-label { font-size: 11px; color: var(--gray-400); white-space: nowrap; }
+        .bar.primary { background: var(--accent); }
+        .bar.secondary { background: var(--gray-200); }
+
+        /* Donut */
+        .donut-container { display: flex; align-items: center; justify-content: center; gap: 24px; padding: 20px; }
+        .donut { position: relative; width: 160px; height: 160px; }
+        .donut svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .donut-center {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        .donut-center .value { font-size: 24px; font-weight: 600; }
+        .donut-center .label { font-size: 11px; color: var(--gray-400); }
+        .donut-legend { display: flex; flex-direction: column; gap: 10px; }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .legend-value { margin-left: auto; font-weight: 500; color: var(--black); }
+
+        /* ===== TABLE ===== */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        thead th {
+            text-align: left; padding: 10px 16px;
+            font-size: 12px; font-weight: 500;
+            color: var(--gray-400); text-transform: uppercase;
+            letter-spacing: 0.3px;
+            background: var(--gray-25);
+            border-bottom: 1px solid var(--gray-100);
+        }
+        tbody td {
+            padding: 12px 16px;
+            font-size: 13px;
+            border-bottom: 1px solid var(--gray-100);
+            vertical-align: middle;
+        }
+        tbody tr { transition: background var(--transition); }
+        tbody tr:hover { background: var(--gray-25); }
+        tbody tr:last-child td { border-bottom: none; }
+
+        /* Tags */
+        .tag {
+            display: inline-flex; align-items: center;
+            padding: 3px 10px; border-radius: 9999px;
+            font-size: 11px; font-weight: 500;
+        }
+        .tag-success { background: var(--success-light); color: var(--success); }
+        .tag-warning { background: var(--warning-light); color: var(--warning); }
+        .tag-danger { background: var(--danger-light); color: var(--danger); }
+        .tag-info { background: var(--accent-light); color: var(--accent); }
+        .tag-purple { background: var(--purple-light); color: var(--purple); }
+
+        .user-cell { display: flex; align-items: center; gap: 10px; }
+        .user-cell .avatar { width: 28px; height: 28px; font-size: 11px; }
+        .user-cell .name { font-weight: 500; }
+        .user-cell .email { font-size: 12px; color: var(--gray-400); }
+
+        /* Pagination */
+        .pagination {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 20px; border-top: 1px solid var(--gray-100);
+        }
+        .pagination-info { font-size: 13px; color: var(--gray-400); }
+        .pagination-btns { display: flex; gap: 4px; }
+        .page-btn {
+            width: 32px; height: 32px; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 500;
+            background: none; border: none; cursor: pointer;
+            color: var(--gray-600); transition: all var(--transition);
+            font-family: inherit;
+        }
+        .page-btn:hover { background: var(--gray-50); }
+        .page-btn.active { background: var(--black); color: var(--white); }
+        .page-btn.disabled { opacity: 0.3; cursor: default; }
+
+        /* Tabs */
+        .tabs-bar { display: flex; gap: 2px; margin-bottom: 16px; }
+        .tab-btn {
+            padding: 7px 14px; border-radius: 6px;
+            font-size: 13px; font-weight: 500; font-family: inherit;
+            background: none; border: none; cursor: pointer;
+            color: var(--gray-400); transition: all var(--transition);
+        }
+        .tab-btn:hover { color: var(--black); }
+        .tab-btn.active { background: var(--white); color: var(--black); box-shadow: var(--shadow-border); }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.4);
+            display: none; align-items: center; justify-content: center;
+            z-index: 200; backdrop-filter: blur(2px);
+        }
+        .modal-overlay.show { display: flex; }
+        .modal {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow-elevated);
+            width: 90%; max-width: 520px;
+            animation: modalIn 0.2s ease;
+        }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.96) translateY(8px); } to { opacity: 1; transform: none; } }
+        .modal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        .modal-header h3 { font-size: 16px; font-weight: 600; }
+        .modal-close {
+            width: 32px; height: 32px; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            background: none; border: none; cursor: pointer; color: var(--gray-400);
+            transition: all var(--transition);
+        }
+        .modal-close:hover { background: var(--gray-50); color: var(--black); }
+        .modal-body { padding: 24px; }
+        .modal-footer {
+            display: flex; justify-content: flex-end; gap: 8px;
+            padding: 16px 24px;
+            border-top: 1px solid var(--gray-100);
+        }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+        .form-input {
+            width: 100%; padding: 9px 12px; border-radius: 6px;
+            font-size: 13px; font-family: inherit; color: var(--black);
+            background: var(--white); box-shadow: var(--shadow-border);
+            border: none; outline: none; transition: box-shadow var(--transition);
+        }
+        .form-input:focus { box-shadow: var(--shadow-border), 0 0 0 2px var(--accent); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        select.form-input { cursor: pointer; appearance: auto; }
+
+        /* ===== TOAST ===== */
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 300; display: flex; flex-direction: column; gap: 8px; }
+        .toast {
+            background: var(--black); color: var(--white);
+            padding: 12px 20px; border-radius: 8px;
+            font-size: 13px; font-weight: 500;
+            box-shadow: var(--shadow-elevated);
+            animation: toastIn 0.3s ease;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: none; } }
+        @keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateX(20px); } }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .charts-row { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-wrapper { margin-left: 0; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .page-content { padding: 16px; }
+            .header { padding: 0 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <h2><span>●</span> ERP System</h2>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">
+            <div class="nav-section-title">概览</div>
+            <div class="nav-item active" data-page="dashboard" onclick="switchPage('dashboard')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                仪表盘
+            </div>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">业务管理</div>
+            <div class="nav-item" data-page="orders" onclick="switchPage('orders')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                订单管理
+                <span class="badge">12</span>
+            </div>
+            <div class="nav-item" data-page="products" onclick="switchPage('products')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                商品管理
+            </div>
+            <div class="nav-item" data-page="customers" onclick="switchPage('customers')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                客户管理
+            </div>
+            <div class="nav-item" data-page="finance" onclick="switchPage('finance')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                财务中心
+            </div>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">系统</div>
+            <div class="nav-item" data-page="employees" onclick="switchPage('employees')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+                员工管理
+            </div>
+            <div class="nav-item" data-page="settings" onclick="switchPage('settings')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                系统设置
+            </div>
+        </div>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="avatar">童</div>
+        <div class="user-info">
+            <div class="user-name">童维猛</div>
+            <div class="user-role">超级管理员</div>
+        </div>
+    </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-wrapper">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <button class="icon-btn" onclick="document.getElementById('sidebar').classList.toggle('open')" style="display:none" id="menu-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+            <div class="breadcrumb" id="breadcrumb">
+                <a href="#">首页</a> <span>/</span> <span id="breadcrumb-current">仪表盘</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                搜索...
+                <kbd>⌘K</kbd>
+            </div>
+            <button class="icon-btn" onclick="showToast('暂无新通知')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                <span class="dot"></span>
+            </button>
+            <button class="icon-btn" onclick="toggleTheme()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- PAGES -->
+    <!-- Dashboard -->
+    <div class="page-content" id="page-dashboard">
+        <div class="page-header">
+            <div>
+                <div class="page-title">仪表盘</div>
+                <div class="page-subtitle">欢迎回来，童维猛。这是今天的业务概览。</div>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-outline" onclick="showToast('报表已刷新')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+                    刷新
+                </button>
+                <button class="btn btn-dark" onclick="showToast('报表已导出', 'success')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    导出报表
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">总收入</span>
+                    <div class="stat-icon" style="background: var(--accent-light);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                    </div>
+                </div>
+                <div class="stat-value">¥847,200</div>
+                <div class="stat-change up">↑ 12.5% <span>较上月</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">订单数</span>
+                    <div class="stat-icon" style="background: var(--success-light);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    </div>
+                </div>
+                <div class="stat-value">1,284</div>
+                <div class="stat-change up">↑ 8.2% <span>较上月</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">客户数</span>
+                    <div class="stat-icon" style="background: var(--purple-light);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                    </div>
+                </div>
+                <div class="stat-value">3,642</div>
+                <div class="stat-change up">↑ 5.1% <span>较上月</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header">
+                    <span class="stat-label">退货率</span>
+                    <div class="stat-icon" style="background: var(--danger-light);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                    </div>
+                </div>
+                <div class="stat-value">2.4%</div>
+                <div class="stat-change down">↓ 0.3% <span>较上月</span></div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-row">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">月度销售趋势</span>
+                    <div class="tabs-bar" style="margin:0">
+                        <button class="tab-btn active" onclick="showToast('已切换为月视图')">月</button>
+                        <button class="tab-btn" onclick="showToast('已切换为周视图')">周</button>
+                        <button class="tab-btn" onclick="showToast('已切换为日视图')">日</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <div class="bar-chart" id="salesChart"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">品类分布</span>
+                </div>
+                <div class="donut-container">
+                    <div class="donut">
+                        <svg viewBox="0 0 36 36">
+                            <circle cx="18" cy="18" r="14" fill="none" stroke="#ebebeb" stroke-width="3"/>
+                            <circle cx="18" cy="18" r="14" fill="none" stroke="#0072f5" stroke-width="3" stroke-dasharray="35 65" stroke-linecap="round"/>
+                            <circle cx="18" cy="18" r="14" fill="none" stroke="#7c3aed" stroke-width="3" stroke-dasharray="25 75" stroke-dashoffset="-35" stroke-linecap="round"/>
+                            <circle cx="18" cy="18" r="14" fill="none" stroke="#1a8754" stroke-width="3" stroke-dasharray="20 80" stroke-dashoffset="-60" stroke-linecap="round"/>
+                            <circle cx="18" cy="18" r="14" fill="none" stroke="#d97706" stroke-width="3" stroke-dasharray="12 88" stroke-dashoffset="-80" stroke-linecap="round"/>
+                        </svg>
+                        <div class="donut-center">
+                            <div class="value">6</div>
+                            <div class="label">品类</div>
+                        </div>
+                    </div>
+                    <div class="donut-legend">
+                        <div class="legend-item"><div class="legend-dot" style="background:#0072f5"></div>电子产品 <div class="legend-value">35%</div></div>
+                        <div class="legend-item"><div class="legend-dot" style="background:#7c3aed"></div>服装鞋帽 <div class="legend-value">25%</div></div>
+                        <div class="legend-item"><div class="legend-dot" style="background:#1a8754"></div>食品饮料 <div class="legend-value">20%</div></div>
+                        <div class="legend-item"><div class="legend-dot" style="background:#d97706"></div>家居日用 <div class="legend-value">12%</div></div>
+                        <div class="legend-item"><div class="legend-dot" style="background:#ebebeb"></div>其他 <div class="legend-value">8%</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders Table -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">最近订单</span>
+                <button class="btn btn-sm btn-outline" onclick="switchPage('orders')">查看全部</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>订单号</th>
+                            <th>客户</th>
+                            <th>商品</th>
+                            <th>金额</th>
+                            <th>状态</th>
+                            <th>日期</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboard-orders"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Page -->
+    <div class="page-content" id="page-orders" style="display:none">
+        <div class="page-header">
+            <div>
+                <div class="page-title">订单管理</div>
+                <div class="page-subtitle">管理和跟踪所有客户订单</div>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-dark" onclick="openModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    新建订单
+                </button>
+            </div>
+        </div>
+        <div class="tabs-bar">
+            <button class="tab-btn active" onclick="filterOrders('all', this)">全部 (48)</button>
+            <button class="tab-btn" onclick="filterOrders('pending', this)">待处理 (12)</button>
+            <button class="tab-btn" onclick="filterOrders('shipping', this)">配送中 (8)</button>
+            <button class="tab-btn" onclick="filterOrders('completed', this)">已完成 (23)</button>
+            <button class="tab-btn" onclick="filterOrders('cancelled', this)">已取消 (5)</button>
+        </div>
+        <div class="card">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" onclick="toggleAllCheckboxes(this)"></th>
+                            <th>订单号</th>
+                            <th>客户</th>
+                            <th>商品数量</th>
+                            <th>总金额</th>
+                            <th>状态</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orders-table"></tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <div class="pagination-info">显示 1-10 共 48 条</div>
+                <div class="pagination-btns">
+                    <button class="page-btn disabled">‹</button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn" onclick="showToast('加载第 2 页')">2</button>
+                    <button class="page-btn" onclick="showToast('加载第 3 页')">3</button>
+                    <button class="page-btn" onclick="showToast('加载第 4 页')">4</button>
+                    <button class="page-btn" onclick="showToast('加载第 5 页')">5</button>
+                    <button class="page-btn" onclick="showToast('加载下一页')">›</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Page -->
+    <div class="page-content" id="page-products" style="display:none">
+        <div class="page-header">
+            <div>
+                <div class="page-title">商品管理</div>
+                <div class="page-subtitle">管理商品库存和定价</div>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-dark" onclick="openModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    添加商品
+                </button>
+            </div>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header"><span class="stat-label">总商品</span></div>
+                <div class="stat-value">1,247</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header"><span class="stat-label">在售</span></div>
+                <div class="stat-value">986</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header"><span class="stat-label">缺货</span></div>
+                <div class="stat-value">34</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header"><span class="stat-label">下架</span></div>
+                <div class="stat-value">227</div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>商品名称</th><th>分类</th><th>价格</th><th>库存</th><th>销量</th><th>状态</th><th>操作</th></tr></thead>
+                    <tbody id="products-table"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customers Page -->
+    <div class="page-content" id="page-customers" style="display:none">
+        <div class="page-header">
+            <div>
+                <div class="page-title">客户管理</div>
+                <div class="page-subtitle">查看和管理所有客户信息</div>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-dark" onclick="openModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    添加客户
+                </button>
+            </div>
+        </div>
+        <div class="card">
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>客户</th><th>电话</th><th>订单数</th><th>累计消费</th><th>等级</th><th>注册时间</th><th>操作</th></tr></thead>
+                    <tbody id="customers-table"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Finance Page -->
+    <div class="page-content" id="page-finance" style="display:none">
+        <div class="page-header">
+            <div>
+                <div class="page-title">财务中心</div>
+                <div class="page-subtitle">收支明细与财务报表</div>
+            </div>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header"><span class="stat-label">本月收入</span></div>
+                <div class="stat-value">¥847,200</div>
+                <div class="stat-change up">↑ 12.5%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header"><span class="stat-label">本月支出</span></div>
+                <div class="stat-value">¥523,800</div>
+                <div class="stat-change down">↑ 3.2%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header"><span class="stat-label">净利润</span></div>
+                <div class="stat-value">¥323,400</div>
+                <div class="stat-change up">↑ 28.1%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-header"><span class="stat-label">待收款</span></div>
+                <div class="stat-value">¥156,900</div>
+                <div class="stat-change down">↓ 5.4%</div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header"><span class="card-title">收支明细</span></div>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>类型</th><th>描述</th><th>金额</th><th>分类</th><th>日期</th><th>状态</th></tr></thead>
+                    <tbody id="finance-table"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Employees Page -->
+    <div class="page-content" id="page-employees" style="display:none">
+        <div class="page-header">
+            <div>
+                <div class="page-title">员工管理</div>
+                <div class="page-subtitle">团队成员和权限管理</div>
+            </div>
+            <div class="page-actions">
+                <button class="btn btn-dark" onclick="openModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    添加员工
+                </button>
+            </div>
+        </div>
+        <div class="card">
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>员工</th><th>部门</th><th>职位</th><th>入职日期</th><th>状态</th><th>操作</th></tr></thead>
+                    <tbody id="employees-table"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Page -->
+    <div class="page-content" id="page-settings" style="display:none">
+        <div class="page-header">
+            <div>
+                <div class="page-title">系统设置</div>
+                <div class="page-subtitle">配置系统参数和偏好</div>
+            </div>
+        </div>
+        <div class="card" style="max-width:640px">
+            <div class="card-header"><span class="card-title">基本设置</span></div>
+            <div class="card-body">
+                <div class="form-group"><label>公司名称</label><input class="form-input" value="童维猛科技有限公司"></div>
+                <div class="form-row">
+                    <div class="form-group"><label>联系电话</label><input class="form-input" value="138-0000-8888"></div>
+                    <div class="form-group"><label>邮箱</label><input class="form-input" value="admin@tongwm.com"></div>
+                </div>
+                <div class="form-group"><label>公司地址</label><input class="form-input" value="浙江省杭州市西湖区文三路 100 号"></div>
+                <div class="form-row">
+                    <div class="form-group"><label>默认货币</label>
+                        <select class="form-input"><option>CNY (¥)</option><option>USD ($)</option></select>
+                    </div>
+                    <div class="form-group"><label>时区</label>
+                        <select class="form-input"><option>Asia/Shanghai (UTC+8)</option></select>
+                    </div>
+                </div>
+                <div style="margin-top:20px">
+                    <button class="btn btn-dark" onclick="showToast('设置已保存', 'success')">保存设置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modal-title">新建订单</h3>
+            <button class="modal-close" onclick="closeModal()">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="modal-body" id="modal-body">
+            <div class="form-row">
+                <div class="form-group"><label>客户名称</label><input class="form-input" placeholder="输入客户名称"></div>
+                <div class="form-group"><label>联系电话</label><input class="form-input" placeholder="输入手机号"></div>
+            </div>
+            <div class="form-group"><label>商品</label><select class="form-input"><option>请选择商品</option><option>iPhone 16 Pro Max</option><option>MacBook Air M4</option><option>AirPods Pro 3</option><option>iPad Air</option></select></div>
+            <div class="form-row">
+                <div class="form-group"><label>数量</label><input class="form-input" type="number" value="1" min="1"></div>
+                <div class="form-group"><label>单价 (¥)</label><input class="form-input" type="number" placeholder="0.00"></div>
+            </div>
+            <div class="form-group"><label>备注</label><input class="form-input" placeholder="可选"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal()">取消</button>
+            <button class="btn btn-dark" onclick="closeModal();showToast('创建成功', 'success')">确认创建</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ===== DATA =====
+const orders = [
+    { id: 'ORD-20240301', customer: '张伟', email: 'zhangwei@mail.com', product: 'iPhone 16 Pro Max', qty: 1, amount: 9999, status: 'completed', date: '2024-03-15' },
+    { id: 'ORD-20240302', customer: '李娜', email: 'lina@mail.com', product: 'MacBook Air M4', qty: 2, amount: 18998, status: 'shipping', date: '2024-03-15' },
+    { id: 'ORD-20240303', customer: '王磊', email: 'wanglei@mail.com', product: 'AirPods Pro 3', qty: 3, amount: 5397, status: 'pending', date: '2024-03-14' },
+    { id: 'ORD-20240304', customer: '赵敏', email: 'zhaomin@mail.com', product: 'iPad Air', qty: 1, amount: 4799, status: 'completed', date: '2024-03-14' },
+    { id: 'ORD-20240305', customer: '孙鹏', email: 'sunpeng@mail.com', product: 'Apple Watch Ultra', qty: 1, amount: 5999, status: 'cancelled', date: '2024-03-13' },
+    { id: 'ORD-20240306', customer: '周婷', email: 'zhouting@mail.com', product: 'Mac Mini M4', qty: 5, amount: 27495, status: 'pending', date: '2024-03-13' },
+    { id: 'ORD-20240307', customer: '吴凯', email: 'wukai@mail.com', product: 'Magic Keyboard', qty: 2, amount: 4598, status: 'shipping', date: '2024-03-12' },
+    { id: 'ORD-20240308', customer: '陈芳', email: 'chenfang@mail.com', product: 'Studio Display', qty: 1, amount: 11499, status: 'completed', date: '2024-03-12' },
+];
+const products = [
+    { name: 'iPhone 16 Pro Max', cat: '电子产品', price: 9999, stock: 234, sold: 1289, status: 'active' },
+    { name: 'MacBook Air M4', cat: '电子产品', price: 9499, stock: 89, sold: 876, status: 'active' },
+    { name: 'AirPods Pro 3', cat: '配件', price: 1799, stock: 0, sold: 2341, status: 'outofstock' },
+    { name: 'iPad Air', cat: '电子产品', price: 4799, stock: 156, sold: 654, status: 'active' },
+    { name: 'Apple Watch Ultra', cat: '配件', price: 5999, stock: 67, sold: 432, status: 'active' },
+    { name: 'Mac Mini M4', cat: '电子产品', price: 5499, stock: 0, sold: 321, status: 'outofstock' },
+    { name: 'Magic Keyboard', cat: '配件', price: 2299, stock: 445, sold: 789, status: 'active' },
+    { name: 'Studio Display', cat: '电子产品', price: 11499, stock: 23, sold: 87, status: 'active' },
+];
+const customers = [
+    { name: '张伟', email: 'zhangwei@mail.com', phone: '138****1234', orders: 24, total: 128900, level: 'VIP', date: '2022-06-15' },
+    { name: '李娜', email: 'lina@mail.com', phone: '139****5678', orders: 18, total: 89700, level: 'VIP', date: '2022-08-22' },
+    { name: '王磊', email: 'wanglei@mail.com', phone: '136****9012', orders: 12, total: 45600, level: '高级', date: '2023-01-10' },
+    { name: '赵敏', email: 'zhaomin@mail.com', phone: '137****3456', orders: 8, total: 32400, level: '高级', date: '2023-03-28' },
+    { name: '孙鹏', email: 'sunpeng@mail.com', phone: '135****7890', orders: 3, total: 8900, level: '普通', date: '2024-01-15' },
+    { name: '周婷', email: 'zhouting@mail.com', phone: '133****2345', orders: 15, total: 67800, level: 'VIP', date: '2022-11-05' },
+];
+const employees = [
+    { name: '童维猛', dept: '技术部', role: '技术总监', date: '2020-03-01', status: 'active', avatar: '童' },
+    { name: '刘洋', dept: '产品部', role: '产品经理', date: '2021-06-15', status: 'active', avatar: '刘' },
+    { name: '陈思', dept: '设计部', role: 'UI设计师', date: '2022-01-10', status: 'active', avatar: '陈' },
+    { name: '王浩', dept: '技术部', role: '前端工程师', date: '2022-09-20', status: 'active', avatar: '王' },
+    { name: '林小雨', dept: '市场部', role: '市场总监', date: '2021-04-08', status: 'active', avatar: '林' },
+    { name: '赵阳', dept: '财务部', role: '财务主管', date: '2020-11-15', status: 'vacation', avatar: '赵' },
+    { name: '孙丽', dept: '人事部', role: 'HR经理', date: '2021-08-22', status: 'active', avatar: '孙' },
+];
+const financeData = [
+    { type: 'income', desc: '客户订单收款 - 张伟', amount: 128900, cat: '销售收入', date: '2024-03-15', status: 'completed' },
+    { type: 'expense', desc: '供应商货款 - 深圳电子', amount: -89000, cat: '采购成本', date: '2024-03-15', status: 'completed' },
+    { type: 'income', desc: '客户订单收款 - 李娜', amount: 45600, cat: '销售收入', date: '2024-03-14', status: 'completed' },
+    { type: 'expense', desc: '员工薪资 - 3月', amount: -234000, cat: '人力成本', date: '2024-03-14', status: 'pending' },
+    { type: 'expense', desc: '办公场地租金 - 3月', amount: -28000, cat: '运营成本', date: '2024-03-13', status: 'completed' },
+    { type: 'income', desc: '退款收回 - 订单取消', amount: 5999, cat: '其他收入', date: '2024-03-13', status: 'completed' },
+    { type: 'expense', desc: '服务器费用 - 阿里云', amount: -12800, cat: '技术成本', date: '2024-03-12', status: 'completed' },
+    { type: 'income', desc: '客户订单收款 - 周婷', amount: 67800, cat: '销售收入', date: '2024-03-12', status: 'pending' },
+];
+
+const statusMap = {
+    completed: { text: '已完成', class: 'tag-success' },
+    shipping: { text: '配送中', class: 'tag-info' },
+    pending: { text: '待处理', class: 'tag-warning' },
+    cancelled: { text: '已取消', class: 'tag-danger' },
+    active: { text: '在售', class: 'tag-success' },
+    outofstock: { text: '缺货', class: 'tag-danger' },
+    vacation: { text: '休假中', class: 'tag-warning' },
+};
+const levelMap = { VIP: 'tag-purple', '高级': 'tag-info', '普通': 'tag-success' };
+
+// ===== RENDER =====
+function renderDashboardOrders() {
+    const tbody = document.getElementById('dashboard-orders');
+    tbody.innerHTML = orders.slice(0, 5).map(o => `
+        <tr>
+            <td style="font-family:monospace;font-size:12px">${o.id}</td>
+            <td><div class="user-cell"><div class="avatar" style="background:${stringToColor(o.customer)}">${o.customer[0]}</div><div><div class="name">${o.customer}</div></div></div></td>
+            <td>${o.product}</td>
+            <td style="font-weight:500">¥${o.amount.toLocaleString()}</td>
+            <td><span class="tag ${statusMap[o.status].class}">${statusMap[o.status].text}</span></td>
+            <td style="color:var(--gray-400)">${o.date}</td>
+            <td><button class="btn btn-sm btn-ghost" onclick="showToast('查看订单 ${o.id}')">查看</button></td>
+        </tr>
+    `).join('');
+}
+
+function renderOrdersTable() {
+    const tbody = document.getElementById('orders-table');
+    tbody.innerHTML = orders.map(o => `
+        <tr>
+            <td><input type="checkbox"></td>
+            <td style="font-family:monospace;font-size:12px">${o.id}</td>
+            <td><div class="user-cell"><div class="avatar" style="background:${stringToColor(o.customer)}">${o.customer[0]}</div><div><div class="name">${o.customer}</div><div class="email">${o.email}</div></div></div></td>
+            <td>${o.qty} 件</td>
+            <td style="font-weight:500">¥${o.amount.toLocaleString()}</td>
+            <td><span class="tag ${statusMap[o.status].class}">${statusMap[o.status].text}</span></td>
+            <td style="color:var(--gray-400)">${o.date}</td>
+            <td>
+                <button class="btn btn-sm btn-ghost" onclick="showToast('编辑订单 ${o.id}')">编辑</button>
+                <button class="btn btn-sm btn-ghost" style="color:var(--danger)" onclick="showToast('已删除', 'error')">删除</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function renderProductsTable() {
+    const tbody = document.getElementById('products-table');
+    tbody.innerHTML = products.map(p => `
+        <tr>
+            <td style="font-weight:500">${p.name}</td>
+            <td><span class="tag tag-info">${p.cat}</span></td>
+            <td style="font-weight:500">¥${p.price.toLocaleString()}</td>
+            <td style="color:${p.stock === 0 ? 'var(--danger)' : 'inherit'};font-weight:500">${p.stock}</td>
+            <td>${p.sold}</td>
+            <td><span class="tag ${statusMap[p.status].class}">${statusMap[p.status].text}</span></td>
+            <td>
+                <button class="btn btn-sm btn-ghost" onclick="showToast('编辑商品 ${p.name}')">编辑</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function renderCustomersTable() {
+    const tbody = document.getElementById('customers-table');
+    tbody.innerHTML = customers.map(c => `
+        <tr>
+            <td><div class="user-cell"><div class="avatar" style="background:${stringToColor(c.name)}">${c.name[0]}</div><div><div class="name">${c.name}</div><div class="email">${c.email}</div></div></div></td>
+            <td style="color:var(--gray-400)">${c.phone}</td>
+            <td>${c.orders}</td>
+            <td style="font-weight:500">¥${c.total.toLocaleString()}</td>
+            <td><span class="tag ${levelMap[c.level]}">${c.level}</span></td>
+            <td style="color:var(--gray-400)">${c.date}</td>
+            <td><button class="btn btn-sm btn-ghost" onclick="showToast('查看客户 ${c.name}')">查看</button></td>
+        </tr>
+    `).join('');
+}
+
+function renderFinanceTable() {
+    const tbody = document.getElementById('finance-table');
+    tbody.innerHTML = financeData.map(f => `
+        <tr>
+            <td><span class="tag ${f.type === 'income' ? 'tag-success' : 'tag-danger'}">${f.type === 'income' ? '收入' : '支出'}</span></td>
+            <td>${f.desc}</td>
+            <td style="font-weight:500;color:${f.amount > 0 ? 'var(--success)' : 'var(--danger)'}">${f.amount > 0 ? '+' : ''}¥${Math.abs(f.amount).toLocaleString()}</td>
+            <td>${f.cat}</td>
+            <td style="color:var(--gray-400)">${f.date}</td>
+            <td><span class="tag ${f.status === 'completed' ? 'tag-success' : 'tag-warning'}">${f.status === 'completed' ? '已确认' : '待确认'}</span></td>
+        </tr>
+    `).join('');
+}
+
+function renderEmployeesTable() {
+    const tbody = document.getElementById('employees-table');
+    tbody.innerHTML = employees.map(e => `
+        <tr>
+            <td><div class="user-cell"><div class="avatar" style="background:${stringToColor(e.name)}">${e.avatar}</div><div><div class="name">${e.name}</div></div></div></td>
+            <td>${e.dept}</td>
+            <td>${e.role}</td>
+            <td style="color:var(--gray-400)">${e.date}</td>
+            <td><span class="tag ${statusMap[e.status].class}">${statusMap[e.status].text}</span></td>
+            <td><button class="btn btn-sm btn-ghost" onclick="showToast('编辑员工 ${e.name}')">编辑</button></td>
+        </tr>
+    `).join('');
+}
+
+function renderSalesChart() {
+    const months = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+    const data2024 = [65, 72, 85, 78, 92, 88, 95, 102, 98, 110, 105, 0];
+    const data2023 = [55, 60, 70, 65, 78, 75, 82, 88, 85, 92, 90, 95];
+    const max = 115;
+    document.getElementById('salesChart').innerHTML = months.map((m, i) => `
+        <div class="bar-group">
+            <div class="bar-wrapper">
+                <div class="bar primary" style="height:${data2024[i] ? (data2024[i]/max*100) : 0}%" title="2024: ${data2024[i] || '-'}万"></div>
+                <div class="bar secondary" style="height:${(data2023[i]/max*100)}%" title="2023: ${data2023[i]}万"></div>
+            </div>
+            <div class="bar-label">${m}</div>
+        </div>
+    `).join('');
+}
+
+// ===== NAVIGATION =====
+function switchPage(page) {
+    document.querySelectorAll('.page-content').forEach(p => p.style.display = 'none');
+    const el = document.getElementById('page-' + page);
+    if (el) el.style.display = 'block';
+
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const navItem = document.querySelector(`.nav-item[data-page="${page}"]`);
+    if (navItem) navItem.classList.add('active');
+
+    const titles = { dashboard:'仪表盘', orders:'订单管理', products:'商品管理', customers:'客户管理', finance:'财务中心', employees:'员工管理', settings:'系统设置' };
+    document.getElementById('breadcrumb-current').textContent = titles[page] || page;
+
+    document.getElementById('sidebar').classList.remove('open');
+}
+
+// ===== MODAL =====
+function openModal() { document.getElementById('modal-overlay').classList.add('show'); }
+function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
+
+// ===== TOAST =====
+function showToast(msg, type = '') {
+    const c = document.getElementById('toast-container');
+    const t = document.createElement('div');
+    t.className = 'toast ' + type;
+    t.innerHTML = (type === 'success' ? '✓ ' : type === 'error' ? '✕ ' : 'ℹ ') + msg;
+    c.appendChild(t);
+    setTimeout(() => { t.style.animation = 'toastOut 0.3s ease forwards'; setTimeout(() => t.remove(), 300); }, 2500);
+}
+
+// ===== HELPERS =====
+function stringToColor(str) {
+    const colors = ['#0072f5','#7c3aed','#1a8754','#d97706','#dc2626','#0891b2','#be185d','#4f46e5'];
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    return colors[Math.abs(hash) % colors.length];
+}
+
+function filterOrders(status, btn) {
+    document.querySelectorAll('.tabs-bar .tab-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    showToast(`筛选: ${status === 'all' ? '全部' : status}`);
+}
+
+function toggleAllCheckboxes(el) {
+    document.querySelectorAll('#orders-table input[type="checkbox"]').forEach(cb => cb.checked = el.checked);
+}
+
+function toggleTheme() {
+    document.body.classList.toggle('dark-mode');
+    showToast('主题已切换');
+}
+
+// ===== INIT =====
+renderDashboardOrders();
+renderOrdersTable();
+renderProductsTable();
+renderCustomersTable();
+renderFinanceTable();
+renderEmployeesTable();
+renderSalesChart();
+</script>
+</body>
+</html>
